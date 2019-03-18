@@ -7,6 +7,8 @@ class App extends Component {
 	componentDidMount() {
 		const fetchResult = api.get('/todos/1');
 		fetchResult.then(todo => console.log(todo));
+		const secondFetchResult = api.cancelableGet('/todos/2');
+		secondFetchResult.promise.then(todo2 => console.log('second', todo2));
 	}
 
 	render() {
