@@ -8,6 +8,8 @@
 npm install --save api-fetcher-treeline
 ```
 
+To polyfill `Promise` and `fetch` [see here](https://github.com/facebook/create-react-app/tree/master/packages/react-app-polyfill)
+
 ## Basic usage
 
 ```javascript
