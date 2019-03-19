@@ -1,6 +1,6 @@
 {
-	"name": "api-fetcher",
-	"version": "1.0.0",
+	"name": "api-fetcher-treeline",
+	"version": "1.0.1",
 	"description": "Fetch wrapper for requests to a REST API",
 	"author": "pszujewski",
 	"license": "MIT",
@@ -33,9 +33,6 @@
 		"transform": {
 			"^.+\\.js$": "babel-jest",
 			"^.+\\.jsx$": "babel-jest"
-		},
-		"moduleNameMapper": {
-			"^@babel/runtime/helpers/(.*)": "<rootDir>/node_modules/@babel/helpers/lib/helpers.js"
 		},
 		"transformIgnorePatterns": [
 			"[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
