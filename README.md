@@ -1,25 +1,60 @@
-# web-lib-starter-rollup-babel
+# api-fetcher-treeline
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/rollup/rollup-starter-lib.svg)](https://greenkeeper.io/)
 
-This repo contains a bare-bones example of how to create a library using Rollup, including importing a module from `node_modules` and converting it from CommonJS.
+## Install
 
-We're creating a library called `how-long-till-lunch`, which usefully tells us how long we have to wait until lunch, using the [ms](https://github.com/zeit/ms) package:
-
-```js
-console.log('it will be lunchtime in ' + howLongTillLunch());
+```bash
+npm install --save api-fetcher-treeline
 ```
 
-## Getting started
+## Basic usage
 
-Clone this repository and install its dependencies:
+```javascript
+// In api.js
 
-`npm run build` builds the library to `dist`
+import { ApiFetcher } from 'api-fetcher-treeline';
 
-`npm run dev` builds the library, then keeps rebuilding it whenever the source files change using [rollup-watch](https://github.com/rollup/rollup-watch).
+const setupApiFetcher = urlPrefix => {
+	const api = new ApiFetcher(urlPrefix);
+	if (process.env.NODE_ENV === 'production') {
+		api.setFetchOptions(/*Custom fetch options*/);
+	}
+	return api;
+};
 
-`npm test` builds the library, then tests it.
+const api = setupApiFetcher('https://somewhere.com/api');
 
+export default api;
+```
+
+Then use it in react components:
+
+```jsx
+import React from 'react';
+import api from '../api';
+
+export default class MyComponent extends React.Component {
+	state = { todos: [] };
+
+	render() {
+		return /**something**/;
+	}
+
+    // Send a GET request to endpoint /todos wrapped
+    // in the ability to cancel it if the component unmounts
+    // before the fetch has completed
+	componentDidMount() {
+        this.fetchRequest = api.cancelableGet('/todos');
+        const { promise } = this.fetchRequest;
+        promise.then(todos => /*Do something with todos*/)
+	}
+
+	componentWillUnmount() {
+		this.fetchRequest.cancel();
+	}
+}
+```
 
 ## License
 
