@@ -1,0 +1,25 @@
+{
+	"env": {
+		"test": {
+			"presets": [["@babel/env", { "modules": false }]],
+			"plugins": [
+				"@babel/plugin-proposal-class-properties",
+				"transform-es2015-modules-commonjs"
+			]
+		},
+		"production": {
+			"presets": [["@babel/env", { "modules": false }]],
+			"plugins": [
+				"@babel/plugin-proposal-class-properties",
+				"@babel/plugin-transform-runtime"
+			]
+		},
+		"development": {
+			"presets": [["@babel/env", { "modules": false }]],
+			"plugins": [
+				"@babel/plugin-proposal-class-properties",
+				"@babel/plugin-transform-runtime"
+			]
+		}
+	}
+}

@@ -14,15 +14,10 @@ export default class ApiSource {
 		this.fetchOptions = fetchOptions;
 	}
 
-	async fetchFromApi(url, options) {
-		let json;
-		try {
-			const response = await fetch(url, options);
-			json = await response.json();
-		} catch (err) {
-			console.error(`Failed to fetch: ${err.message}`);
-		}
-		return json;
+	fetchFromApi(url, options) {
+		return fetch(url, options)
+			.then(response => response.json())
+			.catch(err => console.error(err));
 	}
 
 	getRequestOptions(method, body) {
