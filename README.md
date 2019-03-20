@@ -15,13 +15,15 @@ To polyfill `Promise` and `fetch` [see here](https://github.com/facebook/create-
 ```javascript
 // In api.js
 
-import { ApiFetcher } from 'api-fetcher-treeline';
+import { ApiFetcher } from 'api-fetcher-treeline/dist';
 
 const setupApiFetcher = urlPrefix => {
 	const api = new ApiFetcher(urlPrefix);
+
 	if (process.env.NODE_ENV === 'production') {
 		api.setFetchOptions(/*Custom fetch options*/);
 	}
+
 	return api;
 };
 
