@@ -1,12 +1,12 @@
 {
 	"name": "api-fetcher-treeline",
-	"version": "1.0.1",
-	"description": "Fetch wrapper for requests to a REST API",
+	"version": "1.0.4",
+	"description": "Fetch wrapper for requests to a REST API backend",
 	"author": "pszujewski",
 	"license": "MIT",
 	"main": "dist/index.js",
-	"browser": "umd/api-fetcher.js",
-	"peerDependencies": {
+	"dependencies": {
+		"@babel/runtime": "^7.4.2",
 		"babel-runtime": "^6.26.0"
 	},
 	"devDependencies": {
@@ -17,6 +17,7 @@
 		"babel-jest": "^24.5.0",
 		"babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
 		"husky": "^1.3.1",
+		"jest": "^24.5.0",
 		"prettier": "^1.16.4",
 		"pretty-quick": "^1.10.0",
 		"rollup": "^1.0.0",
@@ -44,5 +45,9 @@
 	},
 	"files": [
 		"dist"
-	]
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pszujewski/api-fetcher"
+	}
 }
