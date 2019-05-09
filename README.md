@@ -13,8 +13,7 @@ To polyfill `Promise` and `fetch` [see here](https://github.com/facebook/create-
 ## Basic usage
 
 ```javascript
-// In api.js
-
+// In api.js ...
 import { ApiFetcher } from 'api-fetcher-treeline/dist';
 
 const setupApiFetcher = urlPrefix => {
@@ -42,7 +41,7 @@ export default class MyComponent extends React.Component {
 	state = { todos: [] };
 
 	render() {
-		return /**something**/;
+		return <div id="some-content" />;
 	}
 
     // Send a GET request to endpoint /todos wrapped
@@ -54,10 +53,74 @@ export default class MyComponent extends React.Component {
         promise.then(todos => /*Do something with todos*/)
 	}
 
+	// Always cancel your requests in componentWillUnmount. This will have no effect
+	// if the Promise has already resolved and its side effects have been issued.
 	componentWillUnmount() {
 		this.fetchRequest.cancel();
 	}
 }
+```
+
+Here is the class definition with some comments.
+
+```javascript
+import ApiSource from './ApiSource';
+import { makeCancelable } from './makeCancelable';
+
+export class ApiFetcher {
+	constructor(urlPrefix) {
+		this.api = new ApiSource(urlPrefix);
+	}
+
+	// Use this to alter the default options passed to the fetch api
+	setFetchOptions(fetchOptions) {
+		this.api.setFetchOptions(fetchOptions);
+	}
+
+	// Sends a plain GET request using the Fetch api
+	get(endpoint) {
+		return this.api.call('GET', endpoint);
+	}
+
+	// Sends a 'WrappedPromise' GET request (see notes below...)
+	cancelableGet(endpoint) {
+		return makeCancelable(this.get(endpoint));
+	}
+
+	post(endpoint, body) {
+		return this.api.call('POST', endpoint, body);
+	}
+
+	// 'body' is the request body passed to fetch. It will be Json.stringify()ed
+	cancelablePost(endpoint, body) {
+		return makeCancelable(this.post(endpoint, body));
+	}
+
+	del(endpoint) {
+		return this.api.call('DELETE', endpoint);
+	}
+
+	cancelableDel(endpoint) {
+		return makeCancelable(this.del(endpoint));
+	}
+
+	call(httpMethod, endpoint, body) {
+		return this.api.call(httpMethod, endpoint, body);
+	}
+
+	cancelableCall(httpMethod, endpoint, body) {
+		return makeCancelable(this.call(httpMethod, endpoint, body));
+	}
+}
+```
+
+**All the "cancelable" methods return a "WrappedPromise" object that is shaped like this:**
+
+```javascript
+const wrappedPromiseExample = {
+	promise: [Promise], // This key points to the actual pending Promise
+	cancel: [Function], // This function will reject() the Promise
+};
 ```
 
 ## License
