@@ -44,13 +44,13 @@ export default class MyComponent extends React.Component {
 		return <div id="some-content" />;
 	}
 
-    // Send a GET request to endpoint /todos wrapped
-    // in the ability to cancel it if the component unmounts
-    // before the fetch has completed
+	// Send a GET request to endpoint /todos wrapped
+	// in the ability to cancel it if the component unmounts
+	// before the fetch has completed
 	componentDidMount() {
-        this.fetchRequest = api.cancelableGet('/todos');
-        const { promise } = this.fetchRequest;
-        promise.then(todos => /*Do something with todos*/)
+		this.fetchRequest = api.cancelableGet('/todos');
+		const { promise } = this.fetchRequest;
+		promise.then(todos => /*Do something with todos*/)
 	}
 
 	// Always cancel your requests in componentWillUnmount. This will have no effect
