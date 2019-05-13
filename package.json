@@ -1,6 +1,6 @@
 {
 	"name": "api-fetcher-treeline",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"description": "Fetch wrapper for requests to a REST API backend",
 	"author": "pszujewski",
 	"license": "MIT",
