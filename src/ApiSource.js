@@ -11,7 +11,11 @@ export default class ApiSource {
 	}
 
 	setFetchOptions(fetchOptions) {
-		this.fetchOptions = fetchOptions;
+		if (fetchOptions && typeof fetchOptions === 'object') {
+			this.fetchOptions = fetchOptions;
+		} else {
+			console.error('You must provide an object to setFetchOptions');
+		}
 	}
 
 	fetchFromApi(url, options) {
@@ -31,8 +35,8 @@ export default class ApiSource {
 	}
 
 	getFetchOptions(method) {
-		if (this.fetchOptions) {
-			return this.fetchOptions;
+		if (this.fetchOptions && this.userDidProvideValidOptions()) {
+			return { method, ...this.fetchOptions };
 		}
 		return this.getDefaultFetchOptions(method);
 	}
@@ -49,5 +53,9 @@ export default class ApiSource {
 
 	getRequestUrl(endpoint = '') {
 		return `${this.urlPrefix}${endpoint.trim()}`;
+	}
+
+	userDidProvideValidOptions() {
+		return Object.keys(this.fetchOptions).length > 0;
 	}
 }
