@@ -123,6 +123,39 @@ const wrappedPromiseExample = {
 };
 ```
 
+**Here are the default options passed on to the browser fetch api**
+
+```javascript
+const defaultFetchOptions = {
+	headers: {
+		'Access-Control-Allow-Origin': '*',
+		'Content-Type': 'application/json ; charset=utf-8',
+	},
+	credentials: 'include',
+	mode: 'cors',
+};
+```
+
+To overwrite these options, use the `setFetchOptions()` method
+
+```javascript
+const setupApiFetcher = urlPrefix => {
+	const api = new ApiFetcher(urlPrefix);
+
+	if (process.env.NODE_ENV === 'production') {
+		api.setFetchOptions({ mode: 'cors', ...myOtherProdFetchOptions });
+	}
+
+	return api;
+};
+```
+
+## Contributing
+
+Submit a pull request!
+
+To run the test suite, run `npm test`.
+
 ## License
 
 [MIT](LICENSE).
