@@ -68,6 +68,16 @@ describe('ApiFetcher', () => {
 		});
 	});
 
+	it('Should prevent a user from invoking setFetchOptions with a string', () => {
+		const fetcher = setupFetcher();
+		fetcher.setFetchOptions('hello');
+		expect(fetcher.api.fetchOptions).toBeNull();
+		expect(fetcher.api.getFetchOptions('GET')).toEqual({
+			method: 'GET',
+			...defaultOptions,
+		});
+	});
+
 	it('Should add the httpMethod to any fetchOptions provided by the user when making a request', () => {
 		const fetcher = setupFetcher();
 		const testOptions = {
