@@ -178,4 +178,16 @@ describe('ApiFetcher', () => {
 			);
 		});
 	});
+
+	it('Should have put and cancelablePut methods', () => {
+		fetchMock({ putSuccess: true });
+		const fetcher = setupFetcher();
+
+		const request = fetcher.put('/todos', { name: 'Laundry' });
+		const wrappedReq = fetcher.cancelablePut('/todos', { name: 'Laundry' });
+
+		expect(typeof wrappedReq.cancel).toBe('function');
+		expect(wrappedReq.promise).toBeInstanceOf(Promise);
+		expect(request).toBeInstanceOf(Promise);
+	});
 });
