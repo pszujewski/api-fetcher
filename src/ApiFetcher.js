@@ -41,4 +41,12 @@ export class ApiFetcher {
 	cancelableCall(httpMethod, endpoint, body) {
 		return makeCancelable(this.call(httpMethod, endpoint, body));
 	}
+
+	put(endpoint, body) {
+		return this.api.call('PUT', endpoint, body);
+	}
+
+	cancelablePut(endpoint, body) {
+		return makeCancelable(this.put(endpoint, body));
+	}
 }
