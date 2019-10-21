@@ -2,8 +2,8 @@ import ApiSource from './ApiSource';
 import { makeCancelable } from './makeCancelable';
 
 export class ApiFetcher {
-	constructor(urlPrefix) {
-		this.api = new ApiSource(urlPrefix);
+	constructor(urlPrefix, config) {
+		this.api = new ApiSource(urlPrefix, config);
 	}
 
 	setFetchOptions(fetchOptions) {
