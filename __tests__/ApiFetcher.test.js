@@ -190,4 +190,54 @@ describe('ApiFetcher', () => {
 		expect(wrappedReq.promise).toBeInstanceOf(Promise);
 		expect(request).toBeInstanceOf(Promise);
 	});
+
+	it('Should accept a config object in the constructor for defining onResponse and onData functions', () => {
+		fetchMock();
+
+		const expected = {
+			id: '123',
+			message: 'success',
+			didCallOnResponse: true,
+			didCallOnData: true,
+		};
+
+		const config = {
+			onResponse: response => {
+				if (response.ok) {
+					const toAdd = { didCallOnResponse: true };
+					const data = response.json();
+					return { ...data, ...toAdd };
+				}
+			},
+			onData: data => {
+				if (data.didCallOnResponse) {
+					return { ...data, didCallOnData: true };
+				}
+			},
+		};
+
+		const fetcher = new ApiFetcher('http://hello.com/api', config);
+
+		return fetcher.get('/todos').then(result => {
+			return expect(result).toEqual(expected);
+		});
+	});
+
+	it('Should accept an optional onCatch method on the config object', () => {
+		fetchMock();
+		const expectedErrorMessage = 'Horrible error';
+
+		const config = {
+			onData: data => {
+				throw new Error(expectedErrorMessage);
+			},
+			onCatch: err => {
+				return expect(err.message).toBe(expectedErrorMessage);
+			},
+		};
+
+		const fetcher = new ApiFetcher('http://hello.com/api', config);
+
+		return fetcher.get('/todos');
+	});
 });
