@@ -68,8 +68,8 @@ import ApiSource from './ApiSource';
 import { makeCancelable } from './makeCancelable';
 
 export class ApiFetcher {
-	constructor(urlPrefix) {
-		this.api = new ApiSource(urlPrefix);
+	constructor(urlPrefix, config) {
+		this.api = new ApiSource(urlPrefix, config);
 	}
 
 	// Use this to alter the default options passed to the fetch api
@@ -150,9 +150,24 @@ const setupApiFetcher = urlPrefix => {
 };
 ```
 
-## Contributing
+If for some reason you neeed to hook into the `response` object, use `config.onResponse()`
 
-Submit a pull request!
+```javascript
+const config = {
+	onResponse: response => {
+		if (response.status !== 401) {
+			return response.json();
+		} else {
+			throw new Error('Response is not ok');
+		}
+	},
+};
+
+const api = new ApiFetcher('http://hello.com/api', config);
+api.get("/todos").then(todos => /* Do something w/ your todos here */);
+```
+
+## Contributing
 
 To run the test suite, run `npm test`.
 

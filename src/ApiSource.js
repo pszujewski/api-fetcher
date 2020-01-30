@@ -1,13 +1,16 @@
+import handleApiFetchError from './apiErrorHandler';
+
 export default class ApiSource {
-	constructor(urlPrefix) {
+	constructor(urlPrefix, config) {
 		this.urlPrefix = urlPrefix;
+		this.config = config;
 		this.fetchOptions = null;
 	}
 
-	call(method, endpoint, body) {
+	call(method, endpoint, body, config = this.config) {
 		const url = this.getRequestUrl(endpoint);
 		const options = this.getRequestOptions(method, body);
-		return this.fetchFromApi(url, options);
+		return this.fetchFromApi(url, options, config);
 	}
 
 	setFetchOptions(fetchOptions) {
@@ -18,10 +21,33 @@ export default class ApiSource {
 		}
 	}
 
-	fetchFromApi(url, options) {
+	fetchFromApi(url, options, config) {
 		return fetch(url, options)
-			.then(response => response.json())
-			.catch(err => console.error(err));
+			.then(response => this.onResponse(response, config))
+			.then(jsonData => this.onData(jsonData, config));
+	}
+
+	onResponse(response, config) {
+		const isValid = this.isValidConfig(config);
+
+		if (isValid && typeof config.onResponse === 'function') {
+			return config.onResponse(response);
+		}
+
+		return handleApiFetchError(response).then(res => res.json());
+	}
+
+	onData(jsonData, config) {
+		const isValid = this.isValidConfig(config);
+
+		if (isValid && typeof config.onData === 'function') {
+			return config.onData(jsonData);
+		}
+		return jsonData;
+	}
+
+	isValidConfig(config) {
+		return config && typeof config === 'object';
 	}
 
 	getRequestOptions(method, body) {
