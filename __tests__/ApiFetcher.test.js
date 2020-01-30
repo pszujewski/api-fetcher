@@ -222,4 +222,27 @@ describe('ApiFetcher', () => {
 			return expect(result).toEqual(expected);
 		});
 	});
+
+	it("Should handle an 'ok' status and 'No Content'", () => {
+		function fetchMockWithNoJsonContent() {
+			global.fetch = mockedFetch.mockImplementation(() => {
+				return new Promise(resolve => {
+					resolve({
+						ok: true,
+						json: () => {
+							throw new Error('Unexpected end of JSON input');
+						},
+					});
+				});
+			});
+		}
+
+		fetchMockWithNoJsonContent();
+
+		const fetcher = new ApiFetcher('http://hello.com/api');
+
+		return fetcher.get('/todos').then(result => {
+			return expect(result).toBeUndefined();
+		});
+	});
 });
