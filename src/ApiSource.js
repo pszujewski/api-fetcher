@@ -34,8 +34,20 @@ export default class ApiSource {
 			return config.onResponse(response);
 		}
 
-		return handleApiFetchError(response).then(res => res.json());
+		return handleApiFetchError(response).then(r => this.getData(r));
 	}
+
+	getData = response => {
+		try {
+			if (response.statusText === 'No Content') {
+				return new Promise(resolve => resolve());
+			}
+			return response.json();
+		} catch (err) {
+			console.error(err);
+			return new Promise(resolve => resolve());
+		}
+	};
 
 	onData(jsonData, config) {
 		const isValid = this.isValidConfig(config);
