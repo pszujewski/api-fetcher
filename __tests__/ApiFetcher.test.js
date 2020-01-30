@@ -222,22 +222,4 @@ describe('ApiFetcher', () => {
 			return expect(result).toEqual(expected);
 		});
 	});
-
-	it('Should accept an optional onCatch method on the config object', () => {
-		fetchMock();
-		const expectedErrorMessage = 'Horrible error';
-
-		const config = {
-			onData: data => {
-				throw new Error(expectedErrorMessage);
-			},
-			onCatch: err => {
-				return expect(err.message).toBe(expectedErrorMessage);
-			},
-		};
-
-		const fetcher = new ApiFetcher('http://hello.com/api', config);
-
-		return fetcher.get('/todos');
-	});
 });

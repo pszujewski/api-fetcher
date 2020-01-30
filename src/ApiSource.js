@@ -1,3 +1,5 @@
+import handleApiFetchError from './apiErrorHandler';
+
 export default class ApiSource {
 	constructor(urlPrefix, config) {
 		this.urlPrefix = urlPrefix;
@@ -22,8 +24,7 @@ export default class ApiSource {
 	fetchFromApi(url, options, config) {
 		return fetch(url, options)
 			.then(response => this.onResponse(response, config))
-			.then(jsonData => this.onData(jsonData, config))
-			.catch(err => this.onCatch(err, config));
+			.then(jsonData => this.onData(jsonData, config));
 	}
 
 	onResponse(response, config) {
@@ -32,7 +33,8 @@ export default class ApiSource {
 		if (isValid && typeof config.onResponse === 'function') {
 			return config.onResponse(response);
 		}
-		return response.json();
+
+		return handleApiFetchError(response).then(res => res.json());
 	}
 
 	onData(jsonData, config) {
@@ -42,15 +44,6 @@ export default class ApiSource {
 			return config.onData(jsonData);
 		}
 		return jsonData;
-	}
-
-	onCatch(error, config) {
-		const isValid = this.isValidConfig(config);
-
-		if (isValid && typeof config.onCatch === 'function') {
-			return config.onCatch(error);
-		}
-		console.error(error);
 	}
 
 	isValidConfig(config) {

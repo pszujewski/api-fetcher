@@ -152,8 +152,6 @@ const setupApiFetcher = urlPrefix => {
 
 ## Contributing
 
-Submit a pull request!
-
 To run the test suite, run `npm test`.
 
 ## License
