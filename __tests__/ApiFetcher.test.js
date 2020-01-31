@@ -261,4 +261,17 @@ describe('ApiFetcher', () => {
 			return expect(result).toBeUndefined();
 		});
 	});
+
+	it('Should allow for cancelable requests to be revoked', () => {
+		fetchMock();
+
+		const fetcher = setupFetcher();
+		const request = fetcher.cancelablePut('/todos', { name: 'Laundry' });
+
+		const requestSpy = jest.spyOn(request, 'cancel');
+		fetcher.revoke(request);
+
+		expect(requestSpy).toHaveBeenCalled();
+		requestSpy.mockRestore();
+	});
 });

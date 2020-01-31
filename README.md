@@ -57,6 +57,7 @@ export default class MyComponent extends React.Component {
 	// if the Promise has already resolved and its side effects have been issued.
 	componentWillUnmount() {
 		this.fetchRequest.cancel();
+		// or `api.revoke(this.fetchRequest);`
 	}
 }
 ```
@@ -111,6 +112,8 @@ export class ApiFetcher {
 	cancelableCall(httpMethod, endpoint, body) {
 		return makeCancelable(this.call(httpMethod, endpoint, body));
 	}
+
+	revoke(cancelableRequest) {...} // cancels a cancelableRequest
 }
 ```
 
