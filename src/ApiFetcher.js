@@ -49,4 +49,10 @@ export class ApiFetcher {
 	cancelablePut(endpoint, body) {
 		return makeCancelable(this.put(endpoint, body));
 	}
+
+	revoke(request) {
+		if (request && typeof request.cancel === 'function') {
+			request.cancel();
+		}
+	}
 }
