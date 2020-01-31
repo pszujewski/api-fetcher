@@ -245,4 +245,20 @@ describe('ApiFetcher', () => {
 			return expect(result).toBeUndefined();
 		});
 	});
+
+	it('An undefined response should not result in an error being thrown', () => {
+		function fetchMockWithUndefinedResponse() {
+			global.fetch = mockedFetch.mockImplementation(() => {
+				return new Promise(resolve => resolve());
+			});
+		}
+
+		fetchMockWithUndefinedResponse();
+
+		const fetcher = new ApiFetcher('http://hello.com/api');
+
+		return fetcher.get('/todos').then(result => {
+			return expect(result).toBeUndefined();
+		});
+	});
 });

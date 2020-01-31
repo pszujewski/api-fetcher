@@ -39,6 +39,9 @@ export default class ApiSource {
 
 	getData = response => {
 		try {
+			if (!response) {
+				return new Promise(resolve => resolve());
+			}
 			if (response.statusText === 'No Content') {
 				return new Promise(resolve => resolve());
 			}
