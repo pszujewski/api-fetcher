@@ -47,25 +47,26 @@ export default class ApiSource {
 		}
 
 		let resolveData;
-		let rejectData;
 
-		return new Promise((resolve, reject) => {
+		return new Promise(resolve => {
 			resolveData = resolve;
-			rejectData = reject;
 			resolve(response.json());
 		}).catch(err => {
 			this.logErrorOnJsonTransform(err);
-			return this.handleJsonTransformError(err, resolveData, rejectData);
+			return this.handleJsonTransformError(err, resolveData);
 		});
 	};
 
 	// Eat up all errors from .json() related to invalid json formatting
-	handleJsonTransformError = (err, resolve, reject) => {
+	handleJsonTransformError = (err, resolve) => {
 		const invalidJsonMsg = 'Unexpected end of JSON input';
 		if (err && err.message && err.message.indexOf(invalidJsonMsg) > -1) {
-			resolve(); // just resolve w/ 'undefined'
+			console.warn(
+				'Consider updating your response code to 204 (No Content)',
+			);
+			return resolve(); // just resolve w/ 'undefined'
 		}
-		reject(err);
+		throw err;
 	};
 
 	logErrorOnJsonTransform = err => {
