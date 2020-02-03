@@ -38,17 +38,40 @@ export default class ApiSource {
 	}
 
 	getData = response => {
-		try {
-			if (!response) {
-				return new Promise(resolve => resolve());
-			}
-			if (response.statusText === 'No Content') {
-				return new Promise(resolve => resolve());
-			}
-			return response.json();
-		} catch (err) {
-			console.error(err);
+		if (!response) {
 			return new Promise(resolve => resolve());
+		}
+
+		if (response.statusText === 'No Content') {
+			return new Promise(resolve => resolve());
+		}
+
+		let resolveData;
+
+		return new Promise(resolve => {
+			resolveData = resolve;
+			resolve(response.json());
+		}).catch(err => {
+			this.logErrorOnJsonTransform(err);
+			return this.handleJsonTransformError(err, resolveData);
+		});
+	};
+
+	// Eat up all errors from .json() related to invalid json formatting
+	handleJsonTransformError = (err, resolve) => {
+		const invalidJsonMsg = 'Unexpected end of JSON input';
+		if (err && err.message && err.message.indexOf(invalidJsonMsg) > -1) {
+			console.warn(
+				'Consider updating your response code to 204 (No Content)',
+			);
+			return resolve(); // just resolve w/ 'undefined'
+		}
+		throw err;
+	};
+
+	logErrorOnJsonTransform = err => {
+		if (err && err.message) {
+			console.error('ApiFetcher caught error:', err.message);
 		}
 	};
 
