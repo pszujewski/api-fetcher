@@ -262,6 +262,64 @@ describe('ApiFetcher', () => {
 		});
 	});
 
+	it('Should allow all ok:false responses to bubble up as errors', () => {
+		function fetchMockResponse(status = 401, ok = false) {
+			global.fetch = mockedFetch.mockImplementation(() => {
+				return new Promise(resolve => {
+					resolve({
+						ok,
+						status,
+						statusText: 'statusText',
+					});
+				});
+			});
+		}
+
+		fetchMockResponse();
+
+		const fetcher = new ApiFetcher('http://hello.com/api');
+
+		return fetcher
+			.get('/todos')
+			.then(() => {
+				return expect(true).toBeFalsy(); // force fail
+			})
+			.catch(e => {
+				const isUnauthorized = e.message.indexOf('Unauthorized') > -1;
+				return expect(isUnauthorized).toBe(true);
+			});
+	});
+
+	it("ok:true responses that throw an error of 'Unexpected end of JSON input' on .json() calls should be ignored", () => {
+		function fetchMockResponse(errorMsg = 'Unexpected end of JSON input') {
+			global.fetch = mockedFetch.mockImplementation(() => {
+				return new Promise(resolve => {
+					resolve({
+						ok: true,
+						status: 200,
+						statusText: 'statusText',
+						json: () => {
+							throw new Error(errorMsg);
+						},
+					});
+				});
+			});
+		}
+
+		fetchMockResponse();
+
+		const fetcher = new ApiFetcher('http://hello.com/api');
+
+		return fetcher
+			.post('/todos', { label: 'Laundry' })
+			.then(result => {
+				return expect(result).toBeUndefined();
+			})
+			.catch(() => {
+				return expect(true).toBeFalsy(); // force fail
+			});
+	});
+
 	it('Should allow for cancelable requests to be revoked', () => {
 		fetchMock();
 
