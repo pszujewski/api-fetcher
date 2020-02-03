@@ -320,6 +320,39 @@ describe('ApiFetcher', () => {
 			});
 	});
 
+	it('ok:true responses that throw any other error on .json() calls should bubble up', () => {
+		const errorMsg = 'Some kind of problem!';
+
+		function fetchMockResponse() {
+			global.fetch = mockedFetch.mockImplementation(() => {
+				return new Promise(resolve => {
+					resolve({
+						ok: true,
+						status: 200,
+						statusText: 'statusText',
+						json: () => {
+							throw new Error(errorMsg);
+						},
+					});
+				});
+			});
+		}
+
+		fetchMockResponse();
+
+		const fetcher = new ApiFetcher('http://hello.com/api');
+
+		return fetcher
+			.post('/todos', { label: 'Laundry' })
+			.then(() => {
+				return expect(true).toBeFalsy(); // force fail
+			})
+			.catch(e => {
+				const isMsg = e.message.indexOf(errorMsg) > -1;
+				return expect(isMsg).toBe(true);
+			});
+	});
+
 	it('Should allow for cancelable requests to be revoked', () => {
 		fetchMock();
 
@@ -331,5 +364,61 @@ describe('ApiFetcher', () => {
 
 		expect(requestSpy).toHaveBeenCalled();
 		requestSpy.mockRestore();
+	});
+
+	it('Should handle Internal Server Errors by rejecting them and letting them bubble up', () => {
+		function fetchMockResponse(status = 500, ok = false) {
+			global.fetch = mockedFetch.mockImplementation(() => {
+				return new Promise(resolve => {
+					resolve({
+						ok,
+						status,
+						statusText: 'SERVER COLLAPSED',
+					});
+				});
+			});
+		}
+
+		fetchMockResponse();
+
+		const fetcher = new ApiFetcher('http://hello.com/api');
+
+		return fetcher
+			.get('/todos')
+			.then(() => {
+				return expect(true).toBeFalsy(); // force fail
+			})
+			.catch(e => {
+				const expected = 'Internal Server Error - SERVER COLLAPSED';
+				return expect(e.message).toBe(expected);
+			});
+	});
+
+	it('Should handle Forbidden Errors by rejecting them and letting them bubble up', () => {
+		function fetchMockResponse(status = 403, ok = false) {
+			global.fetch = mockedFetch.mockImplementation(() => {
+				return new Promise(resolve => {
+					resolve({
+						ok,
+						status,
+						statusText: 'Not Allowed',
+					});
+				});
+			});
+		}
+
+		fetchMockResponse();
+
+		const fetcher = new ApiFetcher('http://hello.com/api');
+
+		return fetcher
+			.get('/todos')
+			.then(() => {
+				return expect(true).toBeFalsy(); // force fail
+			})
+			.catch(e => {
+				const expected = 'Forbidden - Not Allowed';
+				return expect(e.message).toBe(expected);
+			});
 	});
 });
